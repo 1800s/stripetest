@@ -1,22 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
+const mongodb = require('mongodb');
 const stripe = require('stripe')('sk_test_51MuRVpGkOBZlJUoJnfHSceLmbcvStjTesvjxCTyS7wzvA68tztlLOwd13RqWWg42X3MX6bfz1fIQyLJrWbF9HoVr00F0HcsTUJ');
 const nodemailer = require('nodemailer');
 const path = require('path');
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://est:yLvwzxRC1J3ozhJo@cluster0.rmvzzax.mongodb.net/?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
-
-// Define the schema for the user data
-const userSchema = new mongoose.Schema({
-  email: String,
-  discordId: String,
-  key: String
-});
-
-// Create a model for the user data
-const User = mongoose.model('User', userSchema);
+const MongoClient = mongodb.MongoClient;
+const uri = "mongodb+srv://est:yLvwzxRC1J3ozhJo@cluster0.rmvzzax.mongodb.net/?retryWrites=true&w=majority";
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Set up the email transport
 const transporter = nodemailer.createTransport({
@@ -64,8 +56,15 @@ app.post('/complete-payment', async (req, res) => {
     const key = generateRandomKey();
 
     // Store the user data in MongoDB
-    const user = new User({ email, discordId, key });
-    await user.save();
+    const client = new MongoClient(uri);
+    try {
+      await client.connect();
+      const database = client.db('api-keys');
+      const collection = database.collection('users');
+      const result = await collection.insertOne({ email, discordId, key });
+    } finally {
+      await client.close();
+    }
 
     // Send an email to the user with the key
     const mailOptions = {
