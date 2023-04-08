@@ -1,23 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongodb = require('mongodb');
+const { MongoClient } = require('mongodb');
 const stripe = require('stripe')('sk_test_51MuRVpGkOBZlJUoJnfHSceLmbcvStjTesvjxCTyS7wzvA68tztlLOwd13RqWWg42X3MX6bfz1fIQyLJrWbF9HoVr00F0HcsTUJ');
 const nodemailer = require('nodemailer');
 const path = require('path');
-
-// Connect to MongoDB
-const MongoClient = mongodb.MongoClient;
-const uri = "mongodb+srv://est:yLvwzxRC1J3ozhJo@cluster0.rmvzzax.mongodb.net/?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
-// Set up the email transport
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'g6lw3mrk6o2z8jnf@gmail.com',
-    pass: 'Lucifer.44'
-  }
-});
+const uri = "mongodb+srv://est:yLvwzxRC1J3ozhJo@cluster0.rmvzzax.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
 // Create the Express app
 const app = express();
